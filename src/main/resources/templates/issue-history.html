@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Issue history · LeafLibrary</title><link rel="stylesheet" th:href="@{/css/styles.css}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-shell">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="page-heading"><div><p class="eyebrow">CIRCULATION DESK</p><h1>Issue history</h1><p class="muted">Track active loans, returns, and overdue books.</p></div><a class="button button-dark" th:href="@{/loans/new}"><span aria-hidden="true">＋</span> Issue a book</a></section>
+    <section class="panel">
+        <div class="section-heading"><div><p class="eyebrow">LIBRARY RECORDS</p><h2 th:text="${issueView == 'current' ? 'Currently issued books' : (issueView == 'overdue' ? 'Overdue books' : 'All issues')}">All issues</h2></div><span class="count-pill" th:text="${issues.size()} + ' records'">0 records</span></div>
+        <div class="issue-filters"><a th:href="@{/loans/history}" th:classappend="${issueView == 'history' ? 'selected' : ''}">All history</a><a th:href="@{/loans/current}" th:classappend="${issueView == 'current' ? 'selected' : ''}">Currently issued</a><a th:href="@{/loans/overdue}" th:classappend="${issueView == 'overdue' ? 'selected' : ''}">Overdue</a></div>
+        <div class="table-wrap" th:if="${!issues.isEmpty()}"><table><thead><tr><th>BOOK</th><th>MEMBER</th><th>ISSUED</th><th>DUE DATE</th><th>RETURNED</th><th>STATUS / FINE</th><th class="align-right">ACTION</th></tr></thead><tbody>
+            <tr th:each="issue : ${issues}"><td><strong th:text="${issue.book.title}">Title</strong><small th:text="${issue.book.author}">Author</small></td><td><strong th:text="${issue.member.name}">Member</strong><small th:text="${issue.member.email}">Email</small></td><td th:text="${#temporals.format(issue.issueDate, 'MMM d, yyyy')}">Issue date</td><td th:text="${#temporals.format(issue.dueDate, 'MMM d, yyyy')}">Due date</td><td th:text="${issue.returnDate == null ? '—' : #temporals.format(issue.returnDate, 'MMM d, yyyy')}">Return date</td><td><span class="badge" th:classappend="${issue.status.name() == 'ISSUED' ? (issue.dueDate.isBefore(today) ? 'badge-overdue' : 'badge-active') : 'badge-returned'}" th:text="${issue.status.name() == 'RETURNED' ? 'Returned' : (issue.dueDate.isBefore(today) ? 'Overdue' : 'Issued')}">Issued</span><small th:text="${'Fine: ₹' + issue.fine}">Fine: ₹0</small></td><td class="align-right"><form th:if="${issue.status.name() == 'ISSUED'}" method="post" th:action="@{/loans/{id}/return(id=${issue.id})}" th:attr="data-confirm=${'Record the return of ' + issue.book.title + '?'}"><button class="button button-outline small-button" type="submit">Return book</button></form><span class="muted" th:if="${issue.status.name() == 'RETURNED'}">Complete</span></td></tr>
+        </tbody></table></div>
+        <div class="empty-state" th:if="${issues.isEmpty()}"><span class="empty-icon">⇄</span><p th:text="${issueView == 'current' ? 'No books are currently issued' : (issueView == 'overdue' ? 'No overdue books' : 'No issue history yet')}">No issue history yet</p><span>New book issues will appear here.</span><a class="button button-outline" th:href="@{/loans/new}">Issue a book</a></div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body></html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Members · LeafLibrary</title><link rel="stylesheet" th:href="@{/css/styles.css}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-shell">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="page-heading"><div><p class="eyebrow">OUR COMMUNITY</p><h1>Members</h1><p class="muted">The readers who make this library come alive.</p></div><a class="button button-dark" th:href="@{/members/new}"><span aria-hidden="true">＋</span> Add member</a></section>
+    <section class="panel member-panel"><div class="section-heading"><div><p class="eyebrow">DIRECTORY</p><h2>Library members</h2></div><span class="count-pill" th:text="${members.size()} + ' shown'">0 shown</span></div>
+        <form class="search-form" method="get" th:action="@{/members}"><label class="sr-only" for="member-search">Search members</label><span aria-hidden="true">⌕</span><input id="member-search" type="search" name="q" placeholder="Search name, email, phone, or department..." th:value="${q}"><button type="submit" class="button button-outline">Search</button><a class="clear-link" th:if="${q != null and !q.isBlank()}" th:href="@{/members}">Clear</a></form>
+        <div class="table-wrap" th:if="${!members.isEmpty()}"><table><thead><tr><th>MEMBER</th><th>CONTACT</th><th>DEPARTMENT</th><th>REGISTERED</th><th class="align-right">ACTIONS</th></tr></thead><tbody>
+            <tr th:each="member : ${members}"><td><strong th:text="${member.name}">Name</strong></td><td><span th:text="${member.email}">Email</span><small th:text="${member.phone ?: 'No phone'}">Phone</small></td><td th:text="${member.department ?: '—'}">Department</td><td th:text="${#temporals.format(member.registrationDate, 'MMM d, yyyy')}">Date</td><td class="align-right actions"><a class="action-link" th:href="@{/members/{id}/edit(id=${member.id})}">Edit</a><form class="inline-form" method="post" th:action="@{/members/{id}/delete(id=${member.id})}" data-confirm="Delete this member? This cannot be undone."><button class="action-link danger-link" type="submit">Delete</button></form></td></tr>
+        </tbody></table></div>
+        <div class="empty-state" th:if="${members.isEmpty()}"><p>No members found</p><span>Try another search or register a new member.</span><a class="button button-outline" th:href="@{/members/new}">Add member</a></div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body></html>

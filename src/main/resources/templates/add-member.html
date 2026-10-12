@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Add member · LeafLibrary</title><link rel="stylesheet" th:href="@{/css/styles.css}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-shell narrow-shell">
+    <div th:replace="~{fragments/layout :: alerts}"></div><a class="back-link" th:href="@{/members}">← Back to members</a>
+    <section class="panel form-panel"><p class="eyebrow">OUR COMMUNITY</p><h1>Register a member</h1><p class="muted">Add a reader to the library directory.</p>
+        <form th:action="@{/members}" th:object="${memberForm}" method="post" class="stacked-form"><p class="field-error" th:if="${#fields.hasGlobalErrors()}" th:each="error : ${#fields.globalErrors()}" th:text="${error}"></p>
+            <label>Full name <input th:field="*{name}" maxlength="120" required placeholder="Reader name"><small class="field-error" th:errors="*{name}"></small></label>
+            <label>Email address <input th:field="*{email}" type="email" maxlength="160" required placeholder="reader@example.com"><small class="field-error" th:errors="*{email}"></small></label>
+            <div class="form-row"><label>Phone <input th:field="*{phone}" maxlength="30" placeholder="Optional"><small class="field-error" th:errors="*{phone}"></small></label><label>Department <input th:field="*{department}" maxlength="100" placeholder="Optional"><small class="field-error" th:errors="*{department}"></small></label></div>
+            <div class="form-actions"><a class="button button-outline" th:href="@{/members}">Cancel</a><button class="button button-dark" type="submit">Register member</button></div>
+        </form>
+    </section>
+</main><footer th:replace="~{fragments/layout :: footer}"></footer>
+</body></html>

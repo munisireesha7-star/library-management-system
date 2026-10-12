@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Books · LeafLibrary</title><link rel="stylesheet" th:href="@{/css/styles.css}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-shell">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="page-heading"><div><p class="eyebrow">THE COLLECTION</p><h1>Books</h1><p class="muted">Manage the titles and copies in your library.</p></div><a class="button button-dark" th:href="@{/books/new}"><span aria-hidden="true">＋</span> Add a book</a></section>
+    <section class="panel">
+        <form class="search-form" method="get" th:action="@{/books}"><label class="sr-only" for="book-search">Search books</label><span aria-hidden="true">⌕</span><input id="book-search" type="search" name="q" placeholder="Search title, author, ISBN, category, or publisher..." th:value="${q}"><button type="submit" class="button button-outline">Search</button><a class="clear-link" th:if="${q != null and !q.isBlank()}" th:href="@{/books}">Clear</a></form>
+        <div class="table-wrap" th:if="${!books.isEmpty()}"><table><thead><tr><th>TITLE</th><th>ISBN</th><th>CATEGORY</th><th>AVAILABILITY</th><th class="align-right">ACTIONS</th></tr></thead>
+            <tbody><tr th:each="book : ${books}"><td><strong th:text="${book.title}">Title</strong><small th:text="${book.author}">Author</small><small th:if="${book.publisher != null}" th:text="${book.publisher}">Publisher</small></td><td th:text="${book.isbn}">ISBN</td><td><span class="category-tag" th:text="${book.category ?: 'Uncategorized'}">Category</span></td><td><span th:text="${book.availableQuantity + ' of ' + book.quantity + ' copies'}">2 of 3 copies</span><small th:if="${book.availableQuantity == 0}" class="out-label">All copies checked out</small></td><td class="align-right actions"><a class="action-link" th:href="@{/books/{id}/edit(id=${book.id})}">Edit</a><form class="inline-form" method="post" th:action="@{/books/{id}/delete(id=${book.id})}" th:attr="data-confirm=${'Delete ' + book.title + '? This cannot be undone.'}"><button class="action-link danger-link" type="submit">Delete</button></form></td></tr></tbody></table>
+        </div><div class="empty-state" th:if="${books.isEmpty()}"><span class="empty-icon">▤</span><p>No books found</p><span>Try another search or add a new title to your collection.</span><a class="button button-outline" th:href="@{/books/new}">Add a book</a></div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body></html>

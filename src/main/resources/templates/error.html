@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Something went wrong · LeafLibrary</title><link rel="stylesheet" th:href="@{/css/styles.css}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-shell"><section class="panel error-panel"><span class="empty-icon">!</span><p class="eyebrow">OOPS</p><h1>Something went wrong</h1><p class="muted" th:text="${message ?: 'The page you requested could not be found.'}">The request could not be completed.</p><a class="button button-dark" th:href="@{/}">Back to dashboard</a></section></main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body></html>

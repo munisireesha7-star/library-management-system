@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">THE BIG PICTURE</p><h1>Reports</h1><p class="muted">A complete record of lending activity and overdue returns.</p></div></div>
+<section class="stats-grid report-stats">
+    <article class="stat-card"><span class="stat-label">TOTAL LOANS</span><strong>{{ totals.total_loans or 0 }}</strong><span class="stat-caption">All-time checkouts</span></article>
+    <article class="stat-card"><span class="stat-label">CURRENTLY OUT</span><strong>{{ totals.active or 0 }}</strong><span class="stat-caption">Awaiting return</span></article>
+    <article class="stat-card stat-overdue"><span class="stat-label">OVERDUE</span><strong>{{ totals.overdue or 0 }}</strong><span class="stat-caption">Past their due date</span></article>
+    <article class="stat-card"><span class="stat-label">FINES RECORDED</span><strong>₹{{ '%.2f'|format(totals.fines or 0) }}</strong><span class="stat-caption">₹5 per overdue day</span></article>
+</section>
+<section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">LENDING RECORD</p><h2>All activity</h2></div><a class="button button-outline button-small" href="{{ url_for('return_book') }}">Manage returns</a></div>
+    {% if history %}<div class="table-wrap"><table><thead><tr><th>BOOK</th><th>STUDENT</th><th>ISSUED</th><th>DUE</th><th>RETURNED</th><th>FINE</th><th>STATUS</th></tr></thead><tbody>
+    {% for loan in history %}<tr><td><strong>{{ loan.book_title }}</strong></td><td>{{ loan.student_name }}</td><td>{{ loan.issue_date }}</td><td>{{ loan.due_date }}</td><td>{{ loan.returned_at or '—' }}</td><td>{% if loan.fine %}₹{{ '%.2f'|format(loan.fine) }}{% else %}—{% endif %}</td><td>{% if loan.returned_at %}<span class="badge badge-returned">Returned</span>{% elif loan.due_date < today %}<span class="badge badge-overdue">Overdue</span>{% else %}<span class="badge badge-active">On loan</span>{% endif %}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty-state"><span class="empty-icon">▤</span><h3>No lending history</h3><p>Your issues and returns will appear here.</p></div>{% endif %}
+</section>
+{% endblock %}

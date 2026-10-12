@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Issue a book · LeafLibrary</title><link rel="stylesheet" th:href="@{/css/styles.css}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-shell narrow-shell">
+    <div th:replace="~{fragments/layout :: alerts}"></div><a class="back-link" th:href="@{/loans/history}">← Back to issue history</a>
+    <section class="panel form-panel"><p class="eyebrow">CIRCULATION DESK</p><h1>Issue a book</h1><p class="muted">Select an available title and the member borrowing it.</p>
+        <form th:action="@{/loans/issue}" th:object="${issueForm}" method="post" class="stacked-form"><p class="field-error" th:if="${#fields.hasGlobalErrors()}" th:each="error : ${#fields.globalErrors()}" th:text="${error}"></p>
+            <label>Book<select th:field="*{bookId}" required><option value="">Choose an available book</option><option th:each="book : ${books}" th:value="${book.id}" th:text="${book.title + ' — ' + book.author + ' (' + book.availableQuantity + ' available)'}"></option></select><small class="field-error" th:errors="*{bookId}"></small></label>
+            <label>Member<select th:field="*{memberId}" required><option value="">Choose a member</option><option th:each="member : ${members}" th:value="${member.id}" th:text="${member.name + ' — ' + member.email}"></option></select><small class="field-error" th:errors="*{memberId}"></small></label>
+            <label>Due date<input th:field="*{dueOn}" type="date" required><small class="field-error" th:errors="*{dueOn}"></small></label>
+            <p class="form-hint" th:if="${books.isEmpty()}">There are no available copies to issue.</p><p class="form-hint" th:if="${members.isEmpty()}">Register a member before issuing a book.</p>
+            <div class="form-actions"><a class="button button-outline" th:href="@{/loans/history}">Cancel</a><button class="button button-dark" type="submit" th:disabled="${books.isEmpty() or members.isEmpty()}">Confirm issue</button></div>
+        </form>
+    </section>
+</main><footer th:replace="~{fragments/layout :: footer}"></footer>
+</body></html>

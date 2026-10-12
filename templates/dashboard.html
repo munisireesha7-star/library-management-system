@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+<section class="hero">
+    <div><p class="eyebrow">LIBRARY OVERVIEW</p><h1>A little more room<br>for <em>great stories.</em></h1><p class="hero-copy">Your shelves, students, and checkouts at a glance.</p>
+        <a class="button button-dark" href="{{ url_for('issue_book') }}">Issue a book <span>→</span></a></div>
+    <div class="hero-art" aria-hidden="true"><div class="hero-sun"></div><div class="book-illustration"><i></i><i></i><i></i></div><span class="hero-spark">✳</span></div>
+</section>
+<section class="stats-grid" aria-label="Library statistics">
+    <article class="stat-card"><span class="stat-icon icon-books">▤</span><span class="stat-label">TOTAL COPIES</span><strong>{{ stats.books }}</strong><a href="{{ url_for('books') }}">Browse collection ↗</a></article>
+    <article class="stat-card"><span class="stat-icon icon-available">✓</span><span class="stat-label">AVAILABLE</span><strong>{{ stats.available }}</strong><a href="{{ url_for('books') }}">Ready to borrow ↗</a></article>
+    <article class="stat-card"><span class="stat-icon icon-loans">⇄</span><span class="stat-label">ON LOAN</span><strong>{{ stats.active }}</strong><a href="{{ url_for('return_book') }}">Manage returns ↗</a></article>
+    <article class="stat-card"><span class="stat-icon icon-members">♙</span><span class="stat-label">STUDENTS</span><strong>{{ stats.students }}</strong><a href="{{ url_for('students') }}">View directory ↗</a></article>
+    <article class="stat-card stat-overdue"><span class="stat-icon icon-overdue">!</span><span class="stat-label">OVERDUE</span><strong>{{ stats.overdue }}</strong><a href="{{ url_for('return_book') }}">Follow up ↗</a></article>
+</section>
+<section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">THE LATEST</p><h2>Recent activity</h2></div><a class="text-link" href="{{ url_for('reports') }}">Full report →</a></div>
+    {% if recent %}<div class="table-wrap"><table><thead><tr><th>BOOK</th><th>STUDENT</th><th>ISSUED</th><th>DUE</th><th>STATUS</th></tr></thead><tbody>
+    {% for loan in recent %}<tr><td><strong>{{ loan.book_title }}</strong></td><td>{{ loan.student_name }}</td><td>{{ loan.issue_date }}</td><td>{{ loan.due_date }}</td><td>{% if loan.returned_at %}<span class="badge badge-returned">Returned</span>{% elif loan.due_date < today|string %}<span class="badge badge-overdue">Overdue</span>{% else %}<span class="badge badge-active">On loan</span>{% endif %}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty-state"><span class="empty-icon">▤</span><h3>No activity just yet</h3><p>Add a few books and students, then issue your first book.</p><a class="button button-outline" href="{{ url_for('books') }}">Add a book</a></div>{% endif %}
+</section>
+{% endblock %}

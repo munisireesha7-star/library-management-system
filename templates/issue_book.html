@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Issue a book{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">A NEW ADVENTURE</p><h1>Issue a book</h1><p class="muted">Find a reader, choose a title, and send a good story on its way.</p></div><a class="button button-outline" href="{{ url_for('return_book') }}">View current loans</a></div>
+<section class="panel issue-panel">
+    <div class="issue-art" aria-hidden="true"><span>“</span><p>A book is a dream<br>you hold in your hands.</p><i></i><i></i><i></i></div>
+    <form method="post" class="form-stack issue-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Choose a book<select name="book_id" required {% if not books %}disabled{% endif %}><option value="">Select an available book</option>{% for book in books %}<option value="{{ book.id }}">{{ book.title }} — {{ book.author }} ({{ book.available }} available)</option>{% endfor %}</select></label>
+        <label>Choose a student<select name="student_id" required {% if not students %}disabled{% endif %}><option value="">Select a student</option>{% for student in students %}<option value="{{ student.id }}">{{ student.name }} — {{ student.email }}</option>{% endfor %}</select></label>
+        <div class="form-grid date-grid"><label>Issue date<input type="date" name="issue_date" value="{{ today }}" required></label><label>Due date<input type="date" name="due_date" value="{{ default_due }}" min="{{ today }}" required></label></div>
+        {% if not books %}<p class="form-note">There are no available books. <a href="{{ url_for('books') }}">Add a book</a> or record a return first.</p>{% elif not students %}<p class="form-note">Register a student before issuing a book. <a href="{{ url_for('students') }}">Add a student</a>.</p>{% else %}<p class="form-note">The standard loan period is 14 days. Overdue returns incur ₹{{ 5 }} per day.</p>{% endif %}
+        <button class="button button-primary" type="submit" {% if not books or not students %}disabled{% endif %}>Confirm issue <span>→</span></button>
+    </form>
+</section>
+{% endblock %}

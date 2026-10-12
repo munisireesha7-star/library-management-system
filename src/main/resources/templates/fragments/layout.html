@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<header th:fragment="header" class="topbar">
+    <a class="brand" th:href="@{/}"><span class="brand-mark">L</span><span>Leaf<span class="brand-light">Library</span></span></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-navigation" aria-label="Toggle navigation">☰</button>
+    <nav id="main-navigation" class="nav-links" aria-label="Main navigation">
+        <a th:href="@{/}" th:classappend="${activeNav == 'dashboard' ? 'active' : ''}">Dashboard</a>
+        <a th:href="@{/books}" th:classappend="${activeNav == 'books' ? 'active' : ''}">Books</a>
+        <a th:href="@{/members}" th:classappend="${activeNav == 'members' ? 'active' : ''}">Members</a>
+        <a th:href="@{/loans/new}" th:classappend="${activeNav == 'issue' ? 'active' : ''}">Issue book</a>
+        <a th:href="@{/loans/history}" th:classappend="${activeNav == 'history' ? 'active' : ''}">Issue history</a>
+    </nav>
+    <div class="topbar-account"><span class="topbar-label" sec:authentication="name">LIBRARY ADMIN</span>
+        <form th:action="@{/logout}" method="post"><button class="logout-button" type="submit">Sign out</button></form>
+    </div>
+</header>
+<div th:fragment="alerts" class="alerts">
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+</div>
+<footer th:fragment="footer" class="footer">
+    <span>LeafLibrary</span><span>Knowledge grows when shared.</span>
+    <script th:src="@{/js/app.js}" defer></script>
+</footer>
+</body>
+</html>

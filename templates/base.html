@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f7f6f2">
+    <title>{% block title %}Leaf &amp; Ledger{% endblock %} · Library</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</head>
+<body>
+{% if session.get('user_id') %}
+<header class="topbar">
+    <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-mark">L</span><span>leaf<span class="brand-light"> &amp; ledger</span></span></a>
+    <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <nav class="main-nav" aria-label="Main navigation">
+        {% if is_admin %}<a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">Overview</a>{% else %}<a href="{{ url_for('my_history') }}" class="{{ 'active' if request.endpoint in ['dashboard', 'my_history'] }}">My history</a>{% endif %}
+        <a href="{{ url_for('books') }}" class="{{ 'active' if request.endpoint in ['books', 'update_book'] }}">Books</a>
+        {% if is_admin %}
+        <a href="{{ url_for('students') }}" class="{{ 'active' if request.endpoint in ['students', 'update_student'] }}">Students</a>
+        <a href="{{ url_for('issue_book') }}" class="{{ 'active' if request.endpoint == 'issue_book' }}">Issue a book</a>
+        <a href="{{ url_for('return_book') }}" class="{{ 'active' if request.endpoint in ['return_book', 'process_return'] }}">Returns</a>
+        <a href="{{ url_for('reports') }}" class="{{ 'active' if request.endpoint == 'reports' }}">Reports</a>
+        {% endif %}
+    </nav>
+    <div class="account"><span class="avatar">{{ session.get('user_name', 'L')[0]|upper }}</span><span class="account-name">{{ session.get('user_name') }} · {{ session.get('role')|capitalize }}</span>
+        <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="signout" type="submit">Sign out</button></form>
+    </div>
+</header>
+{% endif %}
+<main class="{% if not session.get('user_id') %}auth-layout{% else %}app-shell{% endif %}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}<div class="flash-stack" role="status">{% for category, message in messages %}<div class="flash flash-{{ category }}">{{ message }}<button type="button" class="flash-close" aria-label="Dismiss message">×</button></div>{% endfor %}</div>{% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</main>
+{% if session.get('user_id') %}<footer class="site-footer"><span>Made for the love of reading.</span><span>© {{ current_year }} Leaf &amp; Ledger</span></footer>{% endif %}
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard · LeafLibrary</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-shell">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <section class="welcome">
+        <div><p class="eyebrow">LIBRARY ADMINISTRATION</p><h1>Your library,<br><span>thoughtfully managed.</span></h1>
+            <p class="welcome-copy">A clear view of your collection, members, and the books still out in the world.</p>
+            <a class="button button-dark" th:href="@{/loans/new}">Issue a book <span aria-hidden="true">→</span></a></div>
+        <div class="welcome-art" aria-hidden="true"><div class="sun"></div><div class="book-stack"><i></i><i></i><i></i></div><span class="art-spark spark-one">✳</span><span class="art-spark spark-two">✦</span></div>
+    </section>
+    <section class="stats-grid dashboard-stats" aria-label="Library statistics">
+        <article class="stat-card"><span class="stat-icon icon-books">▤</span><span class="stat-label">TOTAL BOOKS</span><strong th:text="${totalBooks}">0</strong><a th:href="@{/books}">View collection <span aria-hidden="true">↗</span></a></article>
+        <article class="stat-card"><span class="stat-icon icon-available">✓</span><span class="stat-label">AVAILABLE BOOKS</span><strong th:text="${availableBooks}">0</strong><a th:href="@{/books}">Browse availability <span aria-hidden="true">↗</span></a></article>
+        <article class="stat-card"><span class="stat-icon icon-loans">⇄</span><span class="stat-label">ISSUED BOOKS</span><strong th:text="${activeIssueCount}">0</strong><a th:href="@{/loans/current}">View active issues <span aria-hidden="true">↗</span></a></article>
+        <article class="stat-card"><span class="stat-icon icon-members">♙</span><span class="stat-label">TOTAL MEMBERS</span><strong th:text="${memberCount}">0</strong><a th:href="@{/members}">View members <span aria-hidden="true">↗</span></a></article>
+        <article class="stat-card"><span class="stat-icon icon-overdue">!</span><span class="stat-label">OVERDUE BOOKS</span><strong th:text="${overdueCount}">0</strong><a th:href="@{/loans/overdue}">Review overdue <span aria-hidden="true">↗</span></a></article>
+    </section>
+    <section class="panel recent-panel">
+        <div class="section-heading"><div><p class="eyebrow">THE LATEST</p><h2>Recent issues</h2></div><a class="text-link" th:href="@{/loans/history}">Full history <span aria-hidden="true">→</span></a></div>
+        <div class="table-wrap" th:if="${!recentIssues.isEmpty()}"><table><thead><tr><th>BOOK</th><th>MEMBER</th><th>ISSUE DATE</th><th>STATUS</th></tr></thead>
+            <tbody><tr th:each="issue : ${recentIssues}"><td><strong th:text="${issue.book.title}">Book title</strong><small th:text="${issue.book.author}">Author</small></td><td th:text="${issue.member.name}">Member</td><td th:text="${#temporals.format(issue.issueDate, 'MMM d, yyyy')}">Date</td><td><span class="badge" th:classappend="${issue.status.name() == 'ISSUED' ? 'badge-active' : 'badge-returned'}" th:text="${issue.status.name() == 'ISSUED' ? 'Issued' : 'Returned'}">Issued</span></td></tr></tbody></table>
+        </div>
+        <div class="empty-state" th:if="${recentIssues.isEmpty()}"><span class="empty-icon">▤</span><p>No issues yet</p><span>When a book is issued, its activity appears here.</span><a class="button button-outline" th:href="@{/loans/new}">Issue a book</a></div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

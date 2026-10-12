@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin sign in · LeafLibrary</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body class="login-page">
+<main class="login-shell">
+    <a class="brand login-brand" th:href="@{/login}"><span class="brand-mark">L</span><span>Leaf<span class="brand-light">Library</span></span></a>
+    <section class="panel login-panel">
+        <p class="eyebrow">LIBRARY ADMINISTRATION</p>
+        <h1>Welcome back.</h1>
+        <p class="muted">Sign in to manage your library.</p>
+        <div class="alert alert-error" th:if="${param.error}">Invalid username or password.</div>
+        <div class="alert alert-success" th:if="${param.logout}">You have been signed out.</div>
+        <form th:action="@{/login}" method="post" class="stacked-form login-form">
+            <label>Username<input type="text" name="username" autocomplete="username" required autofocus></label>
+            <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+            <button class="button button-dark" type="submit">Sign in</button>
+        </form>
+    </section>
+    <p class="login-note">Authorized library staff only.</p>
+</main>
+</body>
+</html>

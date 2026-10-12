@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Create account{% endblock %}
+{% block content %}
+<section class="auth-card">
+    <a class="brand auth-brand" href="{{ url_for('login') }}"><span class="brand-mark">L</span><span>leaf<span class="brand-light"> &amp; ledger</span></span></a>
+    <p class="eyebrow">{{ 'ADMINISTRATOR SETUP' if admin_setup_available else 'STUDENT ACCESS' }}</p>
+    <h1>{{ 'Create the admin account.' if admin_setup_available else 'Create your student account.' }}</h1>
+    <p class="muted">{% if admin_setup_available %}The first account becomes the library administrator.{% else %}Use the email address your administrator has enrolled for you.{% endif %}</p>
+    <form method="post" class="form-stack">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% if admin_setup_available %}
+        <label>Full name<input type="text" name="name" autocomplete="name" required maxlength="160" placeholder="Alex Morgan"></label>
+        {% endif %}
+        <label>Email address<input type="email" name="email" autocomplete="email" required maxlength="254" placeholder="you@library.org"></label>
+        <label>Password<input type="password" name="password" autocomplete="new-password" required minlength="8" aria-describedby="password-hint"><small id="password-hint">Use at least 8 characters.</small></label>
+        <button class="button button-primary button-wide" type="submit">{{ 'Create admin account' if admin_setup_available else 'Create student account' }} <span>→</span></button>
+    </form>
+    <p class="auth-switch">Already registered? <a href="{{ url_for('login') }}">Sign in</a></p>
+</section>
+{% endblock %}

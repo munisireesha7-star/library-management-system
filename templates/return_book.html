@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Returns{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">BACK ON THE SHELF</p><h1>Returns</h1><p class="muted">Keep track of books currently out and check them back in.</p></div><a class="button button-primary" href="{{ url_for('issue_book') }}">＋ Issue a book</a></div>
+<section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">CURRENTLY OUT</p><h2>{{ loans|length }} {{ 'active loan' if loans|length == 1 else 'active loans' }}</h2></div><span class="fine-note">Late fine: ₹5 / day</span></div>
+    {% if loans %}<div class="table-wrap"><table><thead><tr><th>BOOK</th><th>STUDENT</th><th>ISSUED</th><th>DUE DATE</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody>
+    {% for loan in loans %}<tr><td><strong>{{ loan.book_title }}</strong><small>{{ loan.book_author }}</small></td><td><strong>{{ loan.student_name }}</strong><small>{{ loan.student_email }}</small></td><td>{{ loan.issue_date }}</td><td>{{ loan.due_date }}</td><td>{% if loan.due_date < today %}<span class="badge badge-overdue">Overdue</span>{% else %}<span class="badge badge-active">On time</span>{% endif %}</td><td><form method="post" action="{{ url_for('process_return', loan_id=loan.id) }}" data-confirm="Record this book as returned today?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button button-small button-outline" type="submit">Check in</button></form></td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty-state"><span class="empty-icon">✓</span><h3>Everything is on the shelf</h3><p>There are no books to return right now.</p><a class="button button-primary" href="{{ url_for('issue_book') }}">Issue a book</a></div>{% endif %}
+</section>
+{% endblock %}

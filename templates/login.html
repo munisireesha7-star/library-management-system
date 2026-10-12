@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<section class="auth-card">
+    <a class="brand auth-brand" href="{{ url_for('login') }}"><span class="brand-mark">L</span><span>leaf<span class="brand-light"> &amp; ledger</span></span></a>
+    <p class="eyebrow">YOUR LIBRARY, IN GOOD ORDER</p>
+    <h1>Welcome back.</h1>
+    <p class="muted">Sign in to keep your collection moving.</p>
+    <form method="post" class="form-stack">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Email address<input type="email" name="email" autocomplete="email" required maxlength="254" placeholder="you@library.org"></label>
+        <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+        <button class="button button-primary button-wide" type="submit">Sign in <span>→</span></button>
+    </form>
+    <p class="auth-switch">New to the library? <a href="{{ url_for('register') }}">Create an account</a></p>
+</section>
+{% endblock %}

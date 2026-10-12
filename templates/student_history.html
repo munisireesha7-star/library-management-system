@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}My borrowing history{% endblock %}
+{% block content %}
+<section class="hero">
+    <div><p class="eyebrow">YOUR READING JOURNEY</p><h1>Your next story<br>is <em>waiting.</em></h1><p class="hero-copy">Browse the collection and keep an eye on books you have borrowed.</p>
+        <a class="button button-dark" href="{{ url_for('books') }}">Browse books <span>→</span></a></div>
+    <div class="hero-art" aria-hidden="true"><div class="hero-sun"></div><div class="book-illustration"><i></i><i></i><i></i></div><span class="hero-spark">✳</span></div>
+</section>
+<section class="stats-grid report-stats" aria-label="Your borrowing summary">
+    <article class="stat-card"><span class="stat-label">BOOKS ON LOAN</span><strong>{{ active_count }}</strong><span class="stat-caption">Currently borrowed</span></article>
+    <article class="stat-card stat-overdue"><span class="stat-label">OVERDUE</span><strong>{{ overdue_count }}</strong><span class="stat-caption">Please return these soon</span></article>
+</section>
+<section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">JUST FOR YOU</p><h2>Your borrowing history</h2></div><a class="text-link" href="{{ url_for('books') }}">Browse collection →</a></div>
+    {% if history %}<div class="table-wrap"><table><thead><tr><th>BOOK</th><th>AUTHOR</th><th>ISSUED</th><th>DUE</th><th>RETURNED</th><th>STATUS</th></tr></thead><tbody>
+    {% for transaction in history %}<tr><td><strong>{{ transaction.book_title }}</strong></td><td>{{ transaction.book_author }}</td><td>{{ transaction.issue_date }}</td><td>{{ transaction.due_date }}</td><td>{{ transaction.return_date or '—' }}</td><td>{% if transaction.status == 'returned' %}<span class="badge badge-returned">Returned</span>{% elif transaction.due_date < today %}<span class="badge badge-overdue">Overdue</span>{% else %}<span class="badge badge-active">On loan</span>{% endif %}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty-state"><span class="empty-icon">▤</span><h3>No borrowing history yet</h3><p>When you borrow a book, your checkout and return details will appear here.</p><a class="button button-outline" href="{{ url_for('books') }}">Explore books</a></div>{% endif %}
+</section>
+{% endblock %}

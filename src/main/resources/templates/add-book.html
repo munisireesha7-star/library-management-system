@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Add book · LeafLibrary</title><link rel="stylesheet" th:href="@{/css/styles.css}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-shell narrow-shell">
+    <div th:replace="~{fragments/layout :: alerts}"></div><a class="back-link" th:href="@{/books}">← Back to books</a>
+    <section class="panel form-panel"><p class="eyebrow">THE COLLECTION</p><h1>Add a book</h1><p class="muted">Add a title and its inventory details.</p>
+        <form th:action="@{/books}" th:object="${bookForm}" method="post" class="stacked-form"><p class="field-error" th:if="${#fields.hasGlobalErrors()}" th:each="error : ${#fields.globalErrors()}" th:text="${error}"></p>
+            <label>ISBN <input th:field="*{isbn}" maxlength="20" required placeholder="978-0-00-000000-0"><small class="field-error" th:errors="*{isbn}"></small></label>
+            <label>Book title <input th:field="*{title}" maxlength="150" required placeholder="Book title"><small class="field-error" th:errors="*{title}"></small></label>
+            <label>Author <input th:field="*{author}" maxlength="120" required placeholder="Author name"><small class="field-error" th:errors="*{author}"></small></label>
+            <div class="form-row"><label>Category <input th:field="*{category}" maxlength="80" placeholder="e.g. Fiction"><small class="field-error" th:errors="*{category}"></small></label><label>Publisher <input th:field="*{publisher}" maxlength="150" placeholder="Publisher"><small class="field-error" th:errors="*{publisher}"></small></label></div>
+            <div class="form-row"><label>Publication year <input th:field="*{publicationYear}" type="number" min="0" max="9999" placeholder="e.g. 2024"><small class="field-error" th:errors="*{publicationYear}"></small></label><label>Quantity <input th:field="*{quantity}" type="number" min="0" required><small class="field-error" th:errors="*{quantity}"></small></label></div>
+            <div class="form-actions"><a class="button button-outline" th:href="@{/books}">Cancel</a><button class="button button-dark" type="submit">Add book</button></div>
+        </form>
+    </section>
+</main><footer th:replace="~{fragments/layout :: footer}"></footer>
+</body></html>

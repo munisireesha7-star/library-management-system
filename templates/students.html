@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">YOUR LIBRARY COMMUNITY</p><h1>Students</h1><p class="muted">A thoughtful record of everyone borrowing from your shelves.</p></div><a class="button button-primary" href="#student-form">＋ Add a student</a></div>
+<section class="panel form-panel" id="student-form">
+    <div class="section-heading"><div><p class="eyebrow">{{ 'EDIT PROFILE' if edit_student else 'WELCOME IN' }}</p><h2>{{ 'Update student' if edit_student else 'Register a student' }}</h2></div></div>
+    {% set item = edit_student %}
+    <form method="post" action="{{ url_for('update_student', student_id=item.id) if item else url_for('students') }}" class="form-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Full name<input name="name" required maxlength="160" value="{{ item.name if item else '' }}" placeholder="Student's name"></label>
+        <label>Email address<input type="email" name="email" required maxlength="254" value="{{ item.email if item else '' }}" placeholder="student@school.edu"></label>
+        <label>Phone number<input type="tel" name="phone" required maxlength="40" value="{{ item.phone if item else '' }}" placeholder="Phone number"></label>
+        <label>Department / class<input name="department" required maxlength="160" value="{{ item.department if item else '' }}" placeholder="e.g. Biology, Year 2"></label>
+        <div class="form-actions"><button class="button button-primary" type="submit">{{ 'Save changes' if item else 'Register student' }}</button>{% if item %}<a class="button button-quiet" href="{{ url_for('students') }}">Cancel</a>{% endif %}</div>
+    </form>
+</section>
+<section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">THE DIRECTORY</p><h2>{{ total }} {{ 'student' if total == 1 else 'students' }}</h2></div>
+        <form class="book-filters" method="get">
+            <label class="sr-only" for="student-search">Search name, email, phone, or department</label>
+            <input id="student-search" type="search" name="q" value="{{ search }}" placeholder="Search students">
+            <label class="sr-only" for="student-department">Filter by department</label>
+            <select id="student-department" name="department"><option value="">All departments</option>{% for item in departments %}<option value="{{ item }}" {{ 'selected' if department == item }}>{{ item }}</option>{% endfor %}</select>
+            <label class="sr-only" for="student-page-size">Students per page</label>
+            <select id="student-page-size" name="per_page" aria-label="Students per page">{% for size in (10, 20, 50) %}<option value="{{ size }}" {{ 'selected' if per_page == size }}>{{ size }} / page</option>{% endfor %}</select>
+            <button type="submit">Apply</button>
+            {% if search or department or per_page != 10 %}<a href="{{ url_for('students') }}">Clear</a>{% endif %}
+        </form>
+    </div>
+    {% if students %}<div class="table-wrap"><table><thead><tr><th>STUDENT</th><th>EMAIL</th><th>PHONE</th><th>DEPARTMENT</th><th>ON LOAN</th><th>TOTAL LOANS</th><th>ACTIONS</th></tr></thead><tbody>
+    {% for student in students %}<tr><td><strong>{{ student.name }}</strong></td><td>{{ student.email }}</td><td>{{ student.phone }}</td><td>{{ student.department }}</td><td>{{ student.active_loans }}</td><td>{{ student.total_loans }}</td><td class="row-actions"><a class="small-action" href="{{ url_for('students', edit=student.id, q=search, department=department, per_page=per_page, page=page) }}#student-form">Edit</a><form method="post" action="{{ url_for('delete_student', student_id=student.id) }}" data-confirm="Remove {{ student.name }} from the active directory? Active loans must be returned first. Borrowing history will be retained."><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="small-action danger-action" type="submit">Delete</button></form></td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty-state"><span class="empty-icon">♙</span><h3>{{ 'No matching students' if search or department else 'No students registered yet' }}</h3><p>{{ 'Try another search or department.' if search or department else 'Register students to make them available for book issues.' }}</p></div>{% endif %}
+    {% if total_pages > 1 %}
+    <nav class="pagination" aria-label="Student directory pages">
+        <span class="pagination-summary">Showing {{ (page - 1) * per_page + 1 }}–{{ [page * per_page, total]|min }} of {{ total }}</span>
+        <div class="pagination-links">
+            {% if page > 1 %}<a href="{{ url_for('students', q=search, department=department, per_page=per_page, page=page - 1) }}" aria-label="Previous page">← Previous</a>{% else %}<span class="pagination-disabled">← Previous</span>{% endif %}
+            <span class="pagination-current">Page {{ page }} of {{ total_pages }}</span>
+            {% if page < total_pages %}<a href="{{ url_for('students', q=search, department=department, per_page=per_page, page=page + 1) }}" aria-label="Next page">Next →</a>{% else %}<span class="pagination-disabled">Next →</span>{% endif %}
+        </div>
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}

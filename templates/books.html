@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Books{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">THE COLLECTION</p><h1>Books</h1><p class="muted">{% if is_admin %}Keep your shelves up to date and discover what's ready to borrow.{% else %}Explore the collection and see which books are ready to borrow.{% endif %}</p></div>{% if is_admin %}<a class="button button-primary" href="#book-form">＋ Add a book</a>{% endif %}</div>
+{% if is_admin %}
+<section class="panel form-panel" id="book-form">
+    <div class="section-heading"><div><p class="eyebrow">{{ 'EDIT DETAILS' if edit_book else 'GROW THE COLLECTION' }}</p><h2>{{ 'Update book' if edit_book else 'Add a book' }}</h2></div></div>
+    <form method="post" action="{{ url_for('update_book', book_id=edit_book.id) if edit_book else url_for('books') }}" class="form-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% set item = edit_book %}
+        <label>Book title<input name="title" required maxlength="160" value="{{ item.title if item else '' }}" placeholder="The name of the book"></label>
+        <label>Author<input name="author" required maxlength="160" value="{{ item.author if item else '' }}" placeholder="Author name"></label>
+        <label>ISBN<input name="isbn" required maxlength="32" value="{{ item.isbn if item else '' }}" placeholder="978-..."></label>
+        <label>Category<input name="category" required maxlength="160" value="{{ item.category if item else '' }}" placeholder="Fiction, science..."></label>
+        <label>Publisher<input name="publisher" maxlength="160" value="{{ item.publisher if item else '' }}" placeholder="Publisher (optional)"></label>
+        <label>Publication year<input type="number" name="publication_year" min="1000" max="{{ current_year + 1 }}" value="{{ item.publication_year if item and item.publication_year else '' }}" placeholder="e.g. 2024"></label>
+        <label>Number of copies<input type="number" name="quantity" min="0" max="100000" required value="{{ item.quantity if item else 1 }}"></label>
+        <div class="form-actions"><button class="button button-primary" type="submit">{{ 'Save changes' if edit_book else 'Add to collection' }}</button>{% if edit_book %}<a class="button button-quiet" href="{{ url_for('books') }}">Cancel</a>{% endif %}</div>
+    </form>
+</section>
+{% endif %}
+<section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">YOUR SHELVES</p><h2>{{ total }} {{ 'book' if total == 1 else 'books' }}</h2></div>
+        <form class="book-filters" method="get">
+            <label class="sr-only" for="book-search">Search title, author, ISBN, or category</label>
+            <input id="book-search" type="search" name="q" value="{{ search }}" placeholder="Search title, author, ISBN">
+            <label class="sr-only" for="book-category">Filter by category</label>
+            <select id="book-category" name="category"><option value="">All categories</option>{% for item in categories %}<option value="{{ item }}" {{ 'selected' if category == item }}>{{ item }}</option>{% endfor %}</select>
+            <label class="sr-only" for="book-page-size">Books per page</label>
+            <select id="book-page-size" name="per_page" aria-label="Books per page">{% for size in (10, 20, 50) %}<option value="{{ size }}" {{ 'selected' if per_page == size }}>{{ size }} / page</option>{% endfor %}</select>
+            <button type="submit">Apply</button>
+            {% if search or category or per_page != 10 %}<a href="{{ url_for('books') }}">Clear</a>{% endif %}
+        </form>
+    </div>
+    {% if books %}<div class="table-wrap"><table><thead><tr><th>TITLE &amp; AUTHOR</th><th>ISBN</th><th>CATEGORY</th><th>TOTAL COPIES</th><th>AVAILABLE</th>{% if is_admin %}<th>ACTIONS</th>{% endif %}</tr></thead><tbody>
+    {% for book in books %}<tr><td><strong>{{ book.title }}</strong><small>by {{ book.author }}{% if book.publication_year %} · {{ book.publication_year }}{% endif %}</small></td><td>{{ book.isbn }}</td><td>{{ book.category }}</td><td>{{ book.quantity }}</td><td><span class="availability {{ 'is-empty' if book.available == 0 }}">{{ book.available }}</span></td>{% if is_admin %}<td class="row-actions"><a class="small-action" href="{{ url_for('books', edit=book.id, q=search, category=category, per_page=per_page, page=page) }}#book-form">Edit</a><form method="post" action="{{ url_for('delete_book', book_id=book.id) }}" data-confirm="Remove {{ book.title }} from the active catalogue? Borrowing history, if any, will be retained."><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="small-action danger-action" type="submit">Delete</button></form></td>{% endif %}</tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty-state"><span class="empty-icon">▤</span><h3>{{ 'No matching books' if search else 'Your collection is waiting' }}</h3><p>{{ 'Try a different search term.' if search else 'Add a title above to start building your collection.' }}</p></div>{% endif %}
+    {% if total_pages > 1 %}
+    <nav class="pagination" aria-label="Book catalogue pages">
+        <span class="pagination-summary">Showing {{ (page - 1) * per_page + 1 }}–{{ [page * per_page, total]|min }} of {{ total }}</span>
+        <div class="pagination-links">
+            {% if page > 1 %}<a href="{{ url_for('books', q=search, category=category, per_page=per_page, page=page - 1) }}" aria-label="Previous page">← Previous</a>{% else %}<span class="pagination-disabled">← Previous</span>{% endif %}
+            <span class="pagination-current">Page {{ page }} of {{ total_pages }}</span>
+            {% if page < total_pages %}<a href="{{ url_for('books', q=search, category=category, per_page=per_page, page=page + 1) }}" aria-label="Next page">Next →</a>{% else %}<span class="pagination-disabled">Next →</span>{% endif %}
+        </div>
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}
