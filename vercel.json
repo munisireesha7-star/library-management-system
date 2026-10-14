@@ -2,13 +2,13 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
     "api/index.py": {
-      "includeFiles": "{templates/**,static/**,database.db}"
+      "includeFiles": "{templates/**,static/**}"
     }
   },
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/api/index.py"
+      "destination": "/api/index"
     }
   ]
 }
