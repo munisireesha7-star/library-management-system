@@ -1,0 +1,12 @@
+.git
+.vscode
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+target/
+src/
+pom.xml
+.env
+.env.example
+static/css/*.lnk

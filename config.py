@@ -5,9 +5,34 @@ Converted from: src/main/resources/application.properties
 
 import os
 import secrets
+import shutil
+import tempfile
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
+
+# Check if running in Vercel or AWS Lambda serverless environment
+IS_VERCEL = bool(os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
+
+
+def _resolve_database_path():
+    """Resolve database path, ensuring writable storage in serverless environments."""
+    custom_path = os.getenv("DATABASE_PATH")
+    if custom_path:
+        return Path(custom_path)
+
+    if IS_VERCEL:
+        tmp_dir = Path("/tmp") if Path("/tmp").exists() else Path(tempfile.gettempdir())
+        tmp_db = tmp_dir / "database.db"
+        src_db = BASE_DIR / "database.db"
+        if not tmp_db.exists() and src_db.exists():
+            try:
+                shutil.copyfile(str(src_db), str(tmp_db))
+            except Exception:
+                pass
+        return tmp_db
+
+    return BASE_DIR / "database.db"
 
 
 class Config:
@@ -22,7 +47,8 @@ class Config:
     APP_NAME = os.getenv("APP_NAME", "library-management-system")
 
     # Secret key for Flask session signing and CSRF tokens
-    SECRET_KEY = os.getenv("SECRET_KEY") or secrets.token_hex(32)
+    # Note: A deterministic fallback is essential in serverless environments to keep sessions and CSRF tokens valid across Lambda instances
+    SECRET_KEY = os.getenv("SECRET_KEY") or "booknest-library-secure-key-prod-98f7a6b5c4d3e2f1"
 
     # Database Configuration:
     # spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/library_management?...}
@@ -36,8 +62,8 @@ class Config:
     DB_USERNAME = os.getenv("DB_USERNAME", "root")
     DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 
-    # SQLite fallback configuration for local file-based database
-    DATABASE_PATH = Path(os.getenv("DATABASE_PATH", BASE_DIR / "database.db"))
+    # SQLite database configuration (supports local file and serverless /tmp writable storage)
+    DATABASE_PATH = _resolve_database_path()
     DATABASE = str(DATABASE_PATH)
 
     # JPA / Hibernate equivalents:

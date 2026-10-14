@@ -28,7 +28,11 @@ BASE_DIR = Config.BASE_DIR
 DATABASE = Config.DATABASE_PATH
 FINE_PER_DAY = Config.FINE_PER_DAY
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=str(BASE_DIR / "templates"),
+    static_folder=str(BASE_DIR / "static"),
+)
 app.config.from_object(Config)
 CSRFProtect(app)
 
